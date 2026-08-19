@@ -87,9 +87,9 @@ export function Cart({
         </DialogTrigger>
 
         <DialogContent className="flex max-h-[85vh] max-w-md flex-col gap-0 overflow-hidden p-0 sm:rounded-2xl">
-          <DialogHeader className="border-b border-border px-5 py-4">
+          <DialogHeader className="border-b border-border px-5 py-4 pr-14">
             <div className="flex items-center justify-between">
-              <DialogTitle className="text-sm br-2 font-semibold uppercase tracking-wider text-muted-foreground">
+              <DialogTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 My Order
               </DialogTitle>
               <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-semibold text-primary">
