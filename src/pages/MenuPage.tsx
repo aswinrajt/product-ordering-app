@@ -33,28 +33,36 @@ export function MenuPage() {
         className="bg-grid pointer-events-none fixed inset-0 [mask-image:radial-gradient(90%_60%_at_50%_0%,black,transparent)]"
       />
       <div className="relative">
-      <Navbar cartCount={count} onLogout={clearCart} />
-      <main className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_360px] lg:gap-8">
-        <section className="min-w-0">
-          <h1 className="text-gradient font-display text-2xl font-bold tracking-tight sm:text-3xl">
-            Browse the menu
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Pick a category and add your favourites to the order.
-          </p>
-          <div className="mt-5">
-            <CategoryList
-              activeCategoryId={activeCategoryId}
-              onSelectCategory={setActiveCategoryId}
-            />
-          </div>
-          <div ref={productsRef} className="mt-6 scroll-mt-24">
-            <ProductList products={visibleProducts} onAddToCart={addToCart} />
-          </div>
-        </section>
+        <Navbar cartCount={count} onLogout={clearCart} />
+        <main className="mx-auto max-w-7xl px-4 py-6 pb-28 sm:px-6 lg:gap-8">
+          <section className="min-w-0">
+            <h1 className="text-gradient font-display text-2xl font-bold tracking-tight sm:text-3xl">
+              Browse the menu
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Pick a category and add your favourites to the order.
+            </p>
+            <div className="mt-5">
+              <CategoryList
+                activeCategoryId={activeCategoryId}
+                onSelectCategory={setActiveCategoryId}
+              />
+            </div>
+            <div ref={productsRef} className="mt-6 scroll-mt-24">
+              <ProductList
+                products={visibleProducts}
+                cartItems={items}
+                onAddToCart={addToCart}
+                onIncrease={increaseQuantity}
+                onDecrease={decreaseQuantity}
+              />
+            </div>
+          </section>
+        </main>
         <Cart
           items={items}
           total={total}
+          count={count}
           onIncrease={increaseQuantity}
           onDecrease={decreaseQuantity}
           onRemove={removeFromCart}
@@ -63,7 +71,6 @@ export function MenuPage() {
             productsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
           }
         />
-      </main>
       </div>
     </div>
   );
