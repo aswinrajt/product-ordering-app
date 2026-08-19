@@ -33,7 +33,7 @@ export function ProductCard({ product, quantity, onAddToCart, onIncrease, onDecr
         />
         {inCart && (
           <span className="absolute bottom-3 right-3 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground shadow-md">
-            {quantity} in order
+            {quantity}  in order
           </span>
         )}
       </div>
