@@ -5,27 +5,31 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 
 const STORAGE_KEY = "spice-route-user";
 
-type AuthContextValue = {
-  isAuthenticated: boolean;
-  username: string | null;
-  login: (username: string) => void;
-  logout: () => void;
-};
-
-const AuthContext = createContext<AuthContextValue | null>(null);
-
-function getStoredUsername(): string | null {
+function getSnapshot(): string | null {
   if (typeof window === "undefined") return null;
   try {
     return window.localStorage.getItem(STORAGE_KEY);
   } catch {
     return null;
   }
+}
+
+function getServerSnapshot(): null {
+  return null;
+}
+
+function subscribe(callback: () => void) {
+  const handler = (event: StorageEvent) => {
+    if (event.key === STORAGE_KEY) callback();
+  };
+  window.addEventListener("storage", handler);
+  return () => window.removeEventListener("storage", handler);
 }
 
 function setStoredUsername(username: string | null) {
@@ -41,22 +45,33 @@ function setStoredUsername(username: string | null) {
   }
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [username, setUsername] = useState<string | null>(null);
+type AuthContextValue = {
+  isAuthenticated: boolean;
+  username: string | null;
+  login: (username: string) => void;
+  logout: () => void;
+};
 
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const storedUsername = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [username, setUsername] = useState(storedUsername);
+
+  // Keep internal state in sync when storage changes from other tabs
   useEffect(() => {
-    const stored = getStoredUsername();
-    if (stored) {
-      setUsername(stored);
-    }
+    setUsername(storedUsername);
+  }, [storedUsername]);
+
+  const login = useCallback((name: string) => {
+    setStoredUsername(name);
+    setUsername(name);
   }, []);
 
-  useEffect(() => {
-    setStoredUsername(username);
-  }, [username]);
-
-  const login = useCallback((name: string) => setUsername(name), []);
-  const logout = useCallback(() => setUsername(null), []);
+  const logout = useCallback(() => {
+    setStoredUsername(null);
+    setUsername(null);
+  }, []);
 
   const value = useMemo(
     () => ({ isAuthenticated: username !== null, username, login, logout }),
